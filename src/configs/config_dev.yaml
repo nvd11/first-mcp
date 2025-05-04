@@ -7,3 +7,6 @@ gcp:
 modeling:
   model1:
     table1: DS1.tb_model1_house_price
+
+gemini:
+  api_key: "xxxxxxxx"
