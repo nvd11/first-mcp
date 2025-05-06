@@ -4,9 +4,6 @@ from loguru import logger
 
 from google.cloud import storage
 
-
-
-
 storage_client = storage.Client()
 bucket_name = "jason-hsbc-test"  # Replace with your bucket name
 bucket = storage_client.bucket(bucket_name)
