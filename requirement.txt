@@ -33,8 +33,7 @@ idna==3.10
 iniconfig==2.1.0
 loguru==0.7.3
 markdown-it-py==3.0.0
-mcp==1.7.1
-mcp-client==0.2.0
+
 mdurl==0.1.2
 nodeenv==1.9.1
 openapi-pydantic==0.5.1

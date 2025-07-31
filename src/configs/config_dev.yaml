@@ -9,4 +9,4 @@ modeling:
     table1: DS1.tb_model1_house_price
 
 gemini:
-  api_key: GEMINI_API_KEY
+  api_key: GEMINI-API-KEY
