@@ -124,3 +124,6 @@ dmypy.json
 cython_debug/
 
 # VS Code
+
+# Local Environment Variables
+.env
