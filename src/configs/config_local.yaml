@@ -5,6 +5,9 @@ gcp:
   project: jason-hsbc
   region: europe-west2
 
+proxy:
+  http: http://10.0.1.223:7890
+  https: http://10.0.1.223:7890
 
 deepseek:
   api-key: "DEEPSEEK_API_KEY"
@@ -18,7 +21,7 @@ retrieval:
   similarity_threshold: 0.8
   
 database:
-  host: "127.0.0.1" # Connect to the cloud sql proxy sidecar 
+  host: "34.39.2.90" # Connect to the Cloud SQL Auth Proxy sidecar
   port: 5432
   dbname: "rag_demo_dev"
   user: "rag_demo_user_dev"
