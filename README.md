@@ -9,9 +9,9 @@ This project adopts an **"Onion" Layered Architecture**:
 
 ```mermaid
 graph TD
-    Client[Cline Client] -->|HTTP Header: X-Github-Token| FastAPI[FastAPI Wrapper (server.py)]
+    Client[Cline Client] -->|HTTP Header: X-Github-Token| FastAPI["FastAPI Wrapper (server.py)"]
     FastAPI -->|Middleware Intercept| Context[ContextVars]
-    FastAPI -->|Mount /mcp| FastMCP[FastMCP Core (src/servers/mcp_github_tool_server.py)]
+    FastAPI -->|Mount /mcp| FastMCP["FastMCP Core (src/servers/mcp_github_tool_server.py)"]
     FastMCP -->|Tool Execution| Tool[get_repo_list]
     Tool -->|Read Token| Context
     Tool -->|Call API| GitHub[GitHub API]
