@@ -43,4 +43,5 @@ app.mount("/mcp", mcp_app)
 if __name__ == "__main__":
     # 使用 uvicorn 运行 FastAPI 应用，而不是直接运行 mcp
     logger.info(f"Starting MCP server on port 13333. Token passthrough enabled.")
-    uvicorn.run(app, host="127.0.0.1", port=13333)
+    # Bind to 0.0.0.0 to allow external access (e.g. from Docker or other machines)
+    uvicorn.run(app, host="0.0.0.0", port=13333)

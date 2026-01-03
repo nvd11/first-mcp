@@ -15,7 +15,7 @@ class GitHubService:
     """
     BASE_URL = "https://api.github.com"
 
-    def __init__(self,_token: str = os.getenv("GITHUB_TOKEN")):
+    def __init__(self,_token: str | None = os.getenv("GITHUB_TOKEN")):
         self.token = _token
         if not self.token:
             logger.warning("GITHUB_TOKEN not found in environment variables. API requests will be unauthenticated and subject to lower rate limits.")
@@ -63,10 +63,10 @@ class GitHubService:
 
         except aiohttp.ClientError as e:
             logger.error(f"Error fetching repositories for {owner}: {e}")
-            return []
+            raise
         except Exception as e:
             logger.error(f"An unexpected error occurred: {e}")
-            return []
+            raise
 
     async def get_pull_requests(
         self, repo_owner: str, repo_name: str, state: str = "open"
@@ -207,24 +207,39 @@ class GitHubService:
                     filename = file_info["filename"]
                     status = file_info["status"]
                     
-                    # Fetch original content (from base)
+                    # Create coroutines for fetching content (do not await yet)
                     if status == "added":
-                        original_task = asyncio.create_task(asyncio.sleep(0, result="")) # No original content
+                        original_coro = asyncio.sleep(0, result="") # No original content
                     else:
-                        original_task = self._fetch_file_content(session, repo_owner, repo_name, filename, base_sha)
+                        original_coro = self._fetch_file_content(session, repo_owner, repo_name, filename, base_sha)
                         
-                    # Fetch updated content (from head)
                     if status == "removed":
-                        updated_task = asyncio.create_task(asyncio.sleep(0, result="")) # No updated content
+                        updated_coro = asyncio.sleep(0, result="") # No updated content
                     else:
-                        updated_task = self._fetch_file_content(session, repo_owner, repo_name, filename, head_sha)
+                        updated_coro = self._fetch_file_content(session, repo_owner, repo_name, filename, head_sha)
                         
-                    tasks.append((file_info, original_task, updated_task))
+                    tasks.append((file_info, original_coro, updated_coro))
                 
+                # Execute all tasks concurrently
                 results = []
-                for file_info, original_task, updated_task in tasks:
-                    original_content = await original_task
-                    updated_content = await updated_task
+                # Flatten the list of coroutines to run them all at once
+                all_coros = []
+                for _, original_coro, updated_coro in tasks:
+                    all_coros.append(original_coro)
+                    all_coros.append(updated_coro)
+                
+                if all_coros:
+                    # This is where the magic happens: run everything in parallel
+                    all_results = await asyncio.gather(*all_coros)
+                else:
+                    all_results = []
+                
+                # Reassemble the results
+                result_idx = 0
+                for file_info, _, _ in tasks:
+                    original_content = all_results[result_idx]
+                    updated_content = all_results[result_idx + 1]
+                    result_idx += 2
                     
                     results.append({
                         "filename": file_info["filename"],
